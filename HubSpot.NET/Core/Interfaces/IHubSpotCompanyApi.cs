@@ -1,4 +1,5 @@
-﻿using HubSpot.NET.Api;
+﻿using System.Collections.Generic;
+using HubSpot.NET.Api;
 using HubSpot.NET.Api.Company;
 using HubSpot.NET.Api.Company.Dto;
 
@@ -13,6 +14,8 @@ namespace HubSpot.NET.Core.Interfaces
         T GetById<T>(long companyId) where T : CompanyHubSpotModel, new();
         T Update<T>(T entity) where T : CompanyHubSpotModel, new();
         CompanySearchHubSpotModel<T> Search<T>(SearchRequestOptions opts = null) where T : CompanyHubSpotModel, new();
+        List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : CompanyHubSpotModel, new();
+        void BatchUpdate<T>(List<T> updates) where T : CompanyBatchUpdateRequestInput, new();
 
         T GetAssociations<T>(T entity)
             where T : CompanyHubSpotModel, new();

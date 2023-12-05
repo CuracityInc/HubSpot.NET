@@ -136,7 +136,7 @@
             if (opts.Offset.HasValue)
                 path = path.SetQueryParam("vidOffset", opts.Offset);
 
-			ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, convertToPropertiesSchema: true);
+           ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, convertToPropertiesSchema: true);
 
             return data;
         }
@@ -155,7 +155,7 @@
 
             _client.Execute(path, contact, Method.POST, convertToPropertiesSchema: true);
         }
-        
+
         /// <summary>
         /// Deletes a given contact
         /// </summary>
@@ -180,6 +180,30 @@
             _client.ExecuteBatch(path, contacts.Select(c => (object) c).ToList(), Method.POST, convertToPropertiesSchema: true);
         }
 
+        public void BatchCreate<T>(List<T> contacts) where T : ContactBatchCreateRequestInput, new()
+        {
+            var path = "/crm/v3/objects/contacts/batch/create";
+
+            var inputs = new BatchCreateRequest<ContactBatchCreateRequestInput>
+            {
+                Inputs = contacts.Select(x => (ContactBatchCreateRequestInput)x).ToList()
+            };
+
+            _client.Execute(path, inputs, Method.POST, convertToPropertiesSchema: true);
+        }
+
+        public void BatchUpdate<T>(List<T> contacts) where T : ContactBatchUpdateRequestInput, new()
+        {
+            var path = "/crm/v3/objects/contacts/batch/update";
+
+            var inputs = new BatchUpdateRequest<ContactBatchUpdateRequestInput>
+            {
+                Inputs = contacts.Select(x => (ContactBatchUpdateRequestInput)x).ToList()
+            };
+
+            _client.Execute(path, inputs, Method.POST, convertToPropertiesSchema: true);
+        }
+
         /// <summary>
         /// Get recently updated (or created) contacts
         /// </summary>
@@ -199,14 +223,14 @@
 
             if (!string.IsNullOrEmpty(opts.TimeOffset))
                 path = path.SetQueryParam("timeOffset", opts.TimeOffset);
-            
+
             path = path.SetQueryParam("propertyMode", opts.PropertyMode);
-            
+
             path = path.SetQueryParam("formSubmissionMode", opts.FormSubmissionMode);
-            
+
             path = path.SetQueryParam("showListMemberships", opts.ShowListMemberships);
 
-			ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, opts, convertToPropertiesSchema: true);
+            ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, opts, convertToPropertiesSchema: true);
 
             return data;
         }
@@ -245,6 +269,18 @@
             return data;
         }
 
+        public V3ContactSearchHubSpotModel<T> V3Search<T>(SearchRequestOptions opts = null) where T : ContactHubSpotModel, new()
+        {
+            if (opts == null)
+                opts = new SearchRequestOptions();
+
+            var path = "/crm/v3/objects/contacts/search";
+
+            V3ContactSearchHubSpotModel<T> data = _client.ExecuteList<V3ContactSearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
+
+            return data;
+        }
+
         /// <summary>
         /// Get a list of recently created contacts
         /// </summary>
@@ -264,16 +300,68 @@
 
             if (!string.IsNullOrEmpty(opts.TimeOffset))
                 path = path.SetQueryParam("timeOffset", opts.TimeOffset);
-            
+
             path = path.SetQueryParam("propertyMode", opts.PropertyMode);
-            
+
             path = path.SetQueryParam("formSubmissionMode", opts.FormSubmissionMode);
-            
+
             path = path.SetQueryParam("showListMemberships", opts.ShowListMemberships);
 
-			ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, opts, convertToPropertiesSchema: true);
+            ContactListHubSpotModel<T> data = _client.ExecuteList<ContactListHubSpotModel<T>>(path, opts, convertToPropertiesSchema: true);
 
             return data;
+        }
+
+        public T GetAssociatedCompanies<T>(T entity) where T : ContactHubSpotModel, new()
+        {
+            var path = $"/crm/v4/objects/contact/{entity.Id}/associations/company";
+            long? offSet = null;
+
+            var result = new List<AssociationResult>();
+            do
+            {
+                var associations = _client.ExecuteList<AssociationListHubSpotModel>(string.Format("{0}?limit=100{1}", path, offSet == null ? null : "&offset=" + offSet), convertToPropertiesSchema: false);
+                if (associations.Results.Any())
+                    result.AddRange(associations.Results);
+                if (associations.HasMore)
+                    offSet = associations.Offset;
+                else
+                    offSet = null;
+            } while (offSet != null);
+
+            if (result.Count() > 0)
+            {
+                entity.Associations = new ContactHubSpotAssociations
+                {
+                    CompanyAssociations = result
+                };
+            }
+
+            return entity;
+        }
+
+        public void BatchCreateAssociationsWithLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new()
+        {
+            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/labels/create";
+
+            var inputs = new BatchAssociationLabelsRequest
+            {
+                Inputs = AssociationTypes.Select(x => (BatchAssociationLabelsInputList)x).ToList()
+            };
+
+            _client.Execute(path, inputs, Method.POST, convertToPropertiesSchema: true);
+        }
+
+        public void BatchDeleteAssociationLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new()
+        {
+            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/labels/archive";
+
+            var inputs = new BatchAssociationLabelsRequest
+            {
+                Inputs = AssociationTypes.Select(x => (BatchAssociationLabelsInputList)x).ToList()
+            };
+
+            _client.Execute(path, inputs, Method.POST, convertToPropertiesSchema: true);
         }
     }
 }
