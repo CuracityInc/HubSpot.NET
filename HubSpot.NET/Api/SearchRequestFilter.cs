@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace HubSpot.NET.Api
 {
@@ -13,6 +14,10 @@ namespace HubSpot.NET.Api
 
         [DataMember(Name = "value")]
         public string Value { get; set; }
+
+        // Values is used for Operator "IN"
+        [DataMember(Name = "values")]
+        public List<object> Values { get; set; }
 
         public SearchRequestFilter()
         {
