@@ -145,6 +145,63 @@ namespace HubSpot.NET.Api.Company
         }
 
         /// <summary>
+        /// Search automates pagination, this method does override a set Limit to 100
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="opts"></param>
+        /// <returns></returns>
+        public List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : CompanyHubSpotModel, new()
+        {
+            if (opts == null) opts = new SearchRequestOptions();
+            opts.Limit = 100;
+            var path = "/crm/v3/objects/companies/search";
+            long? offset;
+
+            var result = new List<T>();
+            do
+            {
+                var companies = _client.ExecuteList<CompanySearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
+
+                if (companies.Results.Any())
+                    result.AddRange(companies.Results);
+
+                if (companies.Paging != null)
+                {
+                    offset = Convert.ToInt64(companies.Paging.Next.After);
+                    opts.Offset = offset.ToString();
+                }
+                else offset = null;
+
+            } while (offset != null);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Method accepts any size list and updates in batches of 100 per API limits
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="updates"></param>
+        public void BatchUpdate<T>(List<T> updates) where T : CompanyBatchUpdateRequestInput, new()
+        {
+            var batchSize = 100;
+            var path = "/crm/v3/objects/companies/batch/update";
+
+            for (int i = 0; i < updates.Count; i += batchSize)
+            {
+                var batch = updates.Skip(i).Take(batchSize).ToList();
+
+                var inputs = new BatchUpdateRequest<CompanyBatchUpdateRequestInput>
+                {
+                    Inputs = batch.Select(x => (CompanyBatchUpdateRequestInput)x).ToList()
+                };
+
+                _client.Execute(path, inputs, Method.POST, convertToPropertiesSchema: true);
+            }
+            return;
+        }
+
+        /// <summary>
         /// Gets a list of associations for a given deal
         /// </summary>
         /// <typeparam name="T">Implementation of <see cref="CompanyHubSpotModel"/></typeparam>

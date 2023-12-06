@@ -32,6 +32,9 @@ namespace HubSpot.NET.Api
 		ContainsAToken,
 
 		[EnumMember(Value = "NOT_CONTAINS_TOKEN")]
-		DoesNotContainAToken
+		DoesNotContainAToken,
+
+		[EnumMember(Value = "IN")]
+		In
 	}
 }
