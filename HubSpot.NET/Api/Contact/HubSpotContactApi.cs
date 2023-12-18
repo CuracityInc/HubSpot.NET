@@ -342,7 +342,7 @@
 
         public void BatchCreateAssociationsWithLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new()
         {
-            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/labels/create";
+            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/create";
 
             var inputs = new BatchAssociationLabelsRequest
             {
