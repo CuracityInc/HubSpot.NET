@@ -16,8 +16,8 @@ namespace HubSpot.NET.Api.Contact.Dto
         /// Contacts unique ID in HubSpot
         /// </summary>
         //[DataMember(Name = "vid")]
-        [DataMember(Name = "hs_object_id")] // *** FIX THIS
-        //[IgnoreDataMember]
+        [DataMember(Name = "hs_object_id")] // TODO Improve solution before creating a PR to Chinchilla
+        [IgnoreDataMember]
         public long? Id { get; set; }
         [DataMember(Name = "email")]
         public string Email { get; set; }
