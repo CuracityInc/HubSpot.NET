@@ -15,10 +15,13 @@ namespace HubSpot.NET.Api.Contact.Dto
         /// <summary>
         /// Contacts unique ID in HubSpot
         /// </summary>
-        //[DataMember(Name = "vid")]
-        [DataMember(Name = "hs_object_id")] // TODO Improve solution before creating a PR to Chinchilla
+        [DataMember(Name = "vid")]
         [IgnoreDataMember]
-        public long? Id { get; set; }
+        public long? VId { get; set; }
+        [DataMember(Name = "hs_object_id")]
+        [IgnoreDataMember]
+        public long? HSObjectId { get; set; }
+
         [DataMember(Name = "email")]
         public string Email { get; set; }
         [DataMember(Name = "firstname")]
@@ -41,10 +44,10 @@ namespace HubSpot.NET.Api.Contact.Dto
         public string ZipCode { get; set; }
 
         [DataMember(Name="associatedcompanyid")]
-        public long? AssociatedCompanyId { get;set; }
+        public long? AssociatedCompanyId { get; set; }
 
         [DataMember(Name="hubspot_owner_id")]
-        public long? OwnerId { get;set; }
+        public long? OwnerId { get; set; }
 
         [DataMember(Name = "createdAt")]
         [IgnoreDataMember]
@@ -67,6 +70,30 @@ namespace HubSpot.NET.Api.Contact.Dto
         public virtual void FromHubSpotDataEntity(dynamic hubspotData)
         {
             
+        }
+
+        /// <summary>
+        /// Set the Id based on whether or not the hs_object_id or vid are present
+        /// </summary>
+        [DataMember(Name = "id")]
+        public long? Id
+        {
+            get
+            {
+                if (HSObjectId.HasValue)
+                {
+                    return HSObjectId;
+                }
+                else if (VId.HasValue)
+                {
+                    return VId;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set { }
         }
     }
 }
