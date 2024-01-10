@@ -20,7 +20,7 @@ namespace HubSpot.NET.Core.Interfaces
         ContactListHubSpotModel<T> RecentlyCreated<T>(ListRecentRequestOptions opts = null) where T : ContactHubSpotModel, new();
         ContactListHubSpotModel<T> RecentlyUpdated<T>(ListRecentRequestOptions opts = null) where T : ContactHubSpotModel, new();
         ContactSearchHubSpotModel<T> Search<T>(ContactSearchRequestOptions opts = null) where T : ContactHubSpotModel, new();
-        V3ContactSearchHubSpotModel<T> V3Search<T>(SearchRequestOptions opts = null) where T : ContactHubSpotModel, new();
+        List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : ContactHubSpotModel, new();
         T GetAssociatedCompanies<T>(T entity) where T : ContactHubSpotModel, new();
         void BatchCreateAssociationsWithLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new();
         void BatchDeleteAssociationLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new();

@@ -269,16 +269,37 @@
             return data;
         }
 
-        public V3ContactSearchHubSpotModel<T> V3Search<T>(SearchRequestOptions opts = null) where T : ContactHubSpotModel, new()
+        /// <summary>
+        /// V3 API search that automates pagination, this method does override a set Limit to 100
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="opts"></param>
+        /// <returns></returns>
+        public List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : ContactHubSpotModel, new()
         {
-            if (opts == null)
-                opts = new SearchRequestOptions();
-
+            if (opts == null) opts = new SearchRequestOptions();
+            opts.Limit = 100;
             var path = "/crm/v3/objects/contacts/search";
+            long? offset;
 
-            V3ContactSearchHubSpotModel<T> data = _client.ExecuteList<V3ContactSearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
+            var result = new List<T>();
+            do
+            {
+                var contacts = _client.ExecuteList<V3ContactSearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
 
-            return data;
+                if (contacts.Results.Any())
+                    result.AddRange(contacts.Results);
+
+                if (contacts.Paging != null)
+                {
+                    offset = Convert.ToInt64(contacts.Paging.Next.After);
+                    opts.Offset = offset.ToString();
+                }
+                else offset = null;
+
+            } while (offset != null);
+
+            return result;
         }
 
         /// <summary>
@@ -342,7 +363,7 @@
 
         public void BatchCreateAssociationsWithLabels<T>(AssociationObjectType fromObjectType, AssociationObjectType toObjectType, List<T> AssociationTypes) where T : BatchAssociationLabelsInputList, new()
         {
-            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/labels/create";
+            var path = $"/crm/v4/associations/{fromObjectType}/{toObjectType}/batch/create";
 
             var inputs = new BatchAssociationLabelsRequest
             {
