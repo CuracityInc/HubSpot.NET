@@ -43,6 +43,6 @@
         /// <summary>
         /// Content type for serialized content
         /// </summary>
-        public string ContentType { get; set; }
+        public RestSharp.ContentType ContentType { get; set; }
     }
 }

@@ -78,7 +78,8 @@
 
         private HubSpotToken InitiateRequest<K>(K model, string basePath, params OAuthScopes[] scopes)
         {
-            RestClient client = new RestClient(basePath);
+            RestClient client = new RestClient(basePath,
+                configureSerialization: s => s.UseSerializer(() => new FakeSerializer())) ;
 
             StringBuilder builder = new StringBuilder();
             foreach (OAuthScopes scope in scopes)
@@ -91,7 +92,7 @@
 
             RestRequest request = new RestRequest(MidRoute)
             {
-                JsonSerializer = new FakeSerializer()
+                  
             };
 
             Dictionary<string, string> jsonPreStringPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConvert.SerializeObject(model));
@@ -111,7 +112,7 @@
             if (builder.Length > 0)
                 request.AddQueryParameter("scope", builder.ToString());
 
-            IRestResponse<HubSpotToken> serverReponse = client.Post<HubSpotToken>(request);
+            RestResponse serverReponse = client.Post(request);
 
             if (serverReponse.ResponseStatus != ResponseStatus.Completed)
                 throw new HubSpotException("Server did not respond to authorization request. Content: " + serverReponse.Content, new HubSpotError(serverReponse.StatusCode, serverReponse.Content), serverReponse.Content);
@@ -119,7 +120,8 @@
             if (serverReponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 throw new HubSpotException("Error generating authentication token.", JsonConvert.DeserializeObject<HubSpotError>(serverReponse.Content), serverReponse.Content);
 
-            return serverReponse.Data;
+
+            return JsonConvert.DeserializeObject<HubSpotToken>(serverReponse.Content);
         }
     }
 }
