@@ -5,6 +5,7 @@ using HubSpot.NET.Api.Deal;
 using HubSpot.NET.Api.EmailSubscriptions;
 using HubSpot.NET.Api.Engagement;
 using HubSpot.NET.Api.Files;
+using HubSpot.NET.Api.Notes;
 using HubSpot.NET.Api.Owner;
 using HubSpot.NET.Api.Properties;
 using HubSpot.NET.Api.Task;
@@ -30,6 +31,7 @@ namespace HubSpot.NET.Core
         public IHubSpotContactListApi ContactLists { get; protected set; }
         public IHubSpotEmailSubscriptionsApi EmailSubscriptions { get; protected set; }
         public IHubSpotTicketApi Ticket { get; protected set; }
+        public IHubSpotNotesApi Notes { get; protected set; }
 
         protected virtual void Initialise(IHubSpotClient client)
 		{
@@ -44,6 +46,7 @@ namespace HubSpot.NET.Core
             EmailSubscriptions = new HubSpotEmailSubscriptionsApi(client);
             ContactLists = new HubSpotContactListApi(client);
             Ticket = new HubSpotTicketApi(client);
+            Notes = new HubSpotNotesApi(client);
         }
 
         public HubSpotApi(string apiKey)

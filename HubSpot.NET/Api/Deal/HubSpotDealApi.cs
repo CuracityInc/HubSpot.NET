@@ -308,5 +308,38 @@
 
             return entity;
         }
+
+        /// <summary>
+        /// Search automates pagination, this method does override a set Limit to 100
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="opts"></param>
+        /// <returns></returns>
+        public List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : DealHubSpotModel, new()
+        {
+            if (opts == null) opts = new SearchRequestOptions();
+            opts.Limit = 100;
+            var path = "/crm/v3/objects/deals/search";
+            long? offset;
+
+            var result = new List<T>();
+            do
+            {
+                var deals = _client.ExecuteList<DealSearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
+
+                if (deals.Results.Any())
+                    result.AddRange(deals.Results);
+
+                if (deals.Paging != null)
+                {
+                    offset = Convert.ToInt64(deals.Paging.Next.After);
+                    opts.Offset = offset.ToString();
+                }
+                else offset = null;
+
+            } while (offset != null);
+
+            return result;
+        }
     }
 }

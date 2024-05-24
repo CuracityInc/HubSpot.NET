@@ -6,5 +6,6 @@ namespace HubSpot.NET.Core.Interfaces
     {
         FolderHubSpotModel CreateFolder(FolderHubSpotModel folder);
         FileListHubSpotModel<T> Upload<T>(FileHubSpotModel entity) where T: FileHubSpotModel, new();
+        T UploadV3<T>(FileHubSpotModel entity) where T : FileHubSpotModel, new();
     }
 }

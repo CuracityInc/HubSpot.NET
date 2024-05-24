@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using HubSpot.NET.Api.Files.Dto;
     using HubSpot.NET.Core.Interfaces;
+    using Newtonsoft.Json;
     using RestSharp;
 
     public class HubSpotCosFileApi : IHubSpotCosFileApi
@@ -43,7 +44,22 @@
             var path = $"{new FolderHubSpotModel().RouteBasePath}/folders";
             return _client.Execute<FolderHubSpotModel>(path, folder, Method.POST, false);
         }
-        
 
+        /// <summary>
+        /// Uploads a file to HubSpot using the V3 API
+        /// </summary>
+        public T UploadV3<T>(FileHubSpotModel entity) where T : FileHubSpotModel, new()
+        {
+            var optionsJson = JsonConvert.SerializeObject(new { access = entity.Options.Access.ToString() });
+            var path = "/files/v3/files";
+            var data = _client.ExecuteMultipart<T>(path, entity.File, entity.Name,
+                new Dictionary<string, string>()
+                {
+                    { "folderId", entity.FolderId.ToString() },
+                    { "file", entity.File.ToString() },
+                    { "options", optionsJson }
+                });
+            return data;
+        }
     }
 }
