@@ -1,4 +1,5 @@
-﻿using HubSpot.NET.Api;
+﻿using System.Collections.Generic;
+using HubSpot.NET.Api;
 using HubSpot.NET.Api.Deal.Dto;
 
 namespace HubSpot.NET.Core.Interfaces
@@ -31,5 +32,7 @@ namespace HubSpot.NET.Core.Interfaces
 
         T GetAssociations<T>(T entity)
             where T : DealHubSpotModel, new();
+
+        List<T> LargeSearch<T>(SearchRequestOptions opts = null) where T : DealHubSpotModel, new();
     }
 }

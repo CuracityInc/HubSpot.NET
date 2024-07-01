@@ -12,5 +12,6 @@
 		IHubSpotCompanyPropertiesApi CompanyProperties { get; }
         IHubSpotEmailSubscriptionsApi EmailSubscriptions { get; }
         IHubSpotTicketApi Ticket { get; }
+        IHubSpotNotesApi Notes { get; }
     }
 }
