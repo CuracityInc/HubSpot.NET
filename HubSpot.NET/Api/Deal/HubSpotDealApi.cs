@@ -325,7 +325,7 @@
             var result = new List<T>();
             do
             {
-                var deals = _client.ExecuteList<DealSearchHubSpotModel<T>>(path, opts, Method.POST, convertToPropertiesSchema: true);
+                var deals = _client.ExecuteList<DealSearchHubSpotModel<T>>(path, opts, Method.Post, convertToPropertiesSchema: true);
 
                 if (deals.Results.Any())
                     result.AddRange(deals.Results);

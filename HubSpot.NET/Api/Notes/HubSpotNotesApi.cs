@@ -2,7 +2,7 @@
 using HubSpot.NET.Core;
 using HubSpot.NET.Core.Interfaces;
 using RestSharp;
-
+ 
 namespace HubSpot.NET.Api.Notes
 {
 	public class HubSpotNotesApi : IHubSpotNotesApi
@@ -21,7 +21,7 @@ namespace HubSpot.NET.Api.Notes
 		/// <returns>The created note</returns>
 		public T Create<T>(T entity) where T : NoteHubSpotModel, new()
 		{
-            var data = _client.Execute<T>(entity.RouteBasePath, entity, Method.POST, false);
+            var data = _client.Execute<T>(entity.RouteBasePath, entity, Method.Post, false);
 			return data;
 		}
 	}
